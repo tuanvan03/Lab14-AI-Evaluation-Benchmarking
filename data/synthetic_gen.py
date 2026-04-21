@@ -33,6 +33,7 @@ async def generate_single_turn(
     difficulty: str,
     case_type: str = SingleCaseType.fact_check,
     num_pairs: int = 1,
+    add: str = None
 ) -> List[Dict]:
     """
     Sinh num_pairs cặp QA single-turn từ text cho trước.
@@ -79,6 +80,7 @@ async def generate_single_turn(
 Độ khó của câu hỏi: {difficulty}
 Loại test case: {case_type.value}
 Yêu cầu đặc thù: {instruction}
+Yêu cầu về độ dài của câu hỏi: {add}
 
 Context:
 \"\"\"
@@ -220,82 +222,93 @@ async def generate_qa_from_text() -> List[Dict]:
     # generate_single_turn
     #--------------------------------------------------
 
-    # text = str(thachsanh[1:12])
-    # difficult = "hard"
-    # num_pairs = 5
-    # z = await generate_single_turn(text, difficult, SingleCaseType.fact_check, num_pairs=num_pairs)
-    # qa_pairs.extend(z)
+    text = str(thachsanh[1:12])
+    difficult = "hard"
+    num_pairs = 5
+    type_case = SingleCaseType.fact_check
+    z = await generate_single_turn(text, difficult, type_case, num_pairs=num_pairs)
+    qa_pairs.extend(z)
 
-    # text = str(thachsanh[1:12])
-    # difficult = "hard"
-    # num_pairs = 5
-    # z = await generate_single_turn(text, difficult, SingleCaseType.fact_check, num_pairs=num_pairs)
-    # qa_pairs.extend(z)
+    text = str(caykhe[1:12])
+    difficult = "easy"
+    num_pairs = 5
+    type_case = SingleCaseType.fact_check
+    z = await generate_single_turn(text, difficult, type_case, num_pairs=num_pairs)
+    qa_pairs.extend(z)
 
-    # text = str(thachsanh[1:12])
-    # difficult = "hard"
-    # num_pairs = 5
-    # z = await generate_single_turn(text, difficult, SingleCaseType.fact_check, num_pairs=num_pairs)
-    # qa_pairs.extend(z)
+    text = str(hoguom[1:12])
+    difficult = "medium"
+    num_pairs = 5
+    type_case = SingleCaseType.fact_check
+    z = await generate_single_turn(text, difficult, type_case, num_pairs=num_pairs)
+    qa_pairs.extend(z)
 
-    # text = str(thachsanh[1:12])
-    # difficult = "hard"
-    # num_pairs = 5
-    # z = await generate_single_turn(text, difficult, SingleCaseType.fact_check, num_pairs=num_pairs)
-    # qa_pairs.extend(z)
+    text = str(nguulangchucnu[1:12])
+    difficult = "hard"
+    num_pairs = 5
+    type_case = SingleCaseType.fact_check
+    z = await generate_single_turn(text, difficult, type_case, num_pairs=num_pairs)
+    qa_pairs.extend(z)
 
-    # text = str(thachsanh[1:12])
-    # difficult = "hard"
-    # num_pairs = 5
-    # z = await generate_single_turn(text, difficult, SingleCaseType.fact_check, num_pairs=num_pairs)
-    # qa_pairs.extend(z)
+    text = str(sodua[1:12])
+    difficult = "easy"
+    num_pairs = 5
+    type_case = SingleCaseType.fact_check
+    z = await generate_single_turn(text, difficult, type_case, num_pairs=num_pairs)
+    qa_pairs.extend(z)
 
-    # text = str(thachsanh[1:12])
-    # difficult = "hard"
-    # num_pairs = 5
-    # z = await generate_single_turn(text, difficult, SingleCaseType.fact_check, num_pairs=num_pairs)
-    # qa_pairs.extend(z)
+    text = str(thachsanh[-19:-7])
+    difficult = "hard"
+    num_pairs = 5
+    type_case = SingleCaseType.adversarial_hijack
+    z = await generate_single_turn(text, difficult, type_case, num_pairs=num_pairs)
+    qa_pairs.extend(z)
 
-    # text = str(thachsanh[1:12])
-    # difficult = "hard"
-    # num_pairs = 5
-    # z = await generate_single_turn(text, difficult, SingleCaseType.fact_check, num_pairs=num_pairs)
-    # qa_pairs.extend(z)
+    text = str(sodua[-22:-10])
+    difficult = "hard"
+    num_pairs = 5
+    type_case = SingleCaseType.adversarial_injection
+    z = await generate_single_turn(text, difficult, type_case, num_pairs=num_pairs)
+    qa_pairs.extend(z)
 
-    # text = str(thachsanh[1:12])
-    # difficult = "hard"
-    # num_pairs = 5
-    # z = await generate_single_turn(text, difficult, SingleCaseType.fact_check, num_pairs=num_pairs)
-    # qa_pairs.extend(z)
+    text = str(nguulangchucnu[-19:-7])
+    difficult = "hard"
+    num_pairs = 5
+    type_case = SingleCaseType.edge_ambiguous
+    z = await generate_single_turn(text, difficult, type_case, num_pairs=num_pairs)
+    qa_pairs.extend(z)
 
-    # text = str(thachsanh[1:12])
-    # difficult = "hard"
-    # num_pairs = 5
-    # z = await generate_single_turn(text, difficult, SingleCaseType.fact_check, num_pairs=num_pairs)
-    # qa_pairs.extend(z)
+    text = str(hoguom[-24:-12])
+    difficult = "hard"
+    num_pairs = 5
+    type_case = SingleCaseType.edge_conflicting
+    z = await generate_single_turn(text, difficult, type_case, num_pairs=num_pairs)
+    qa_pairs.extend(z)
 
-    # text = str(thachsanh[1:12])
-    # difficult = "hard"
-    # num_pairs = 5
-    # z = await generate_single_turn(text, difficult, SingleCaseType.fact_check, num_pairs=num_pairs)
-    # qa_pairs.extend(z)
+    text = str(thachsanh[-12:])
+    difficult = "hard"
+    add = "sinh question dài vào nhé, tôi muốn test xem nếu question đầu vào dài thì agent sẽ trả lời như thế nào"
+    num_pairs = 5
+    type_case = SingleCaseType.edge_out_of_context
+    z = await generate_single_turn(text, difficult, type_case, num_pairs=num_pairs, add=add)
+    qa_pairs.extend(z)
 
 
 
     #--------------------------------------------------
     # generate_multi_turn
     #--------------------------------------------------
-    text = str(thachsanh[1:12])
+    text = str(thachsanh[2:14])
     difficult = "hard"
     num_pairs = 3
     z = await generate_multi_turn(text, difficult, MulCaseType.correction, num_pairs=num_pairs)
     qa_pairs.extend(z)
 
-    # text = str(thachsanh[1:12])
-    # difficult = "medium"
-    # num_pairs = 2
-    # z = await generate_multi_turn(text, difficult, MulCaseType.carry_over, num_pairs=num_pairs)
-    # qa_pairs.extend(z)
+    text = str(thachsanh[3:15])
+    difficult = "medium"
+    num_pairs = 2
+    z = await generate_multi_turn(text, difficult, MulCaseType.carry_over, num_pairs=num_pairs)
+    qa_pairs.extend(z)
 
 
     return qa_pairs
