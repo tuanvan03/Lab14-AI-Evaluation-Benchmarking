@@ -16,7 +16,8 @@ class SingleCaseType(Enum):
     edge_conflicting = "edge-conflicting"
 
 class MulCaseType(Enum):
-    pass
+    carry_over = "carry-over"
+    correction = "correction"
 
 _client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
@@ -115,85 +116,94 @@ Chỉ trả về JSON array thuần tuý, không markdown, không giải thích.
     return parsed
 
 
-# # ──────────────────────────────────────────────
-# # Helper: sinh multi-turn QA
-# # ──────────────────────────────────────────────
-# async def generate_multi_turn(
-#     text: str,
-#     sub_type: str = "carry-over",
-#     num_pairs: int = 3,
-# ) -> List[Dict]:
-#     """
-#     Sinh num_pairs test case multi-turn từ text cho trước.
+# ──────────────────────────────────────────────
+# Helper: sinh multi-turn QA
+# ──────────────────────────────────────────────
+async def generate_multi_turn(
+    text: list[str],
+    sub_type: MulCaseType = MulCaseType.carry_over,
+    num_pairs: int = 1,
+) -> List[Dict]:
+    """
+    Sinh num_pairs test case multi-turn từ text cho trước.
+    Output mỗi case giống single-turn nhưng có thêm key conversation_history.
 
-#     sub_type hợp lệ:
-#       carry-over  — câu hỏi cuối phụ thuộc vào câu trả lời trước đó
-#       correction  — user đính chính thông tin ở lượt giữa hội thoại
-#     """
-#     sub_instructions = {
-#         "carry-over": (
-#             "Lượt trước user hỏi 1 câu tổng quát về truyện (ví dụ: nhân vật chính là ai) và đã nhận câu trả lời. "
-#             "Câu hỏi cuối (question) đào sâu hơn vào chi tiết vừa được nhắc đến — "
-#             "không thể hiểu đúng nếu không đọc conversation_history."
-#         ),
-#         "correction": (
-#             "User ban đầu hỏi nhầm tên nhân vật hoặc tên truyện, agent trả lời theo thông tin sai đó. "
-#             "Sau đó user đính chính lại đúng tên/truyện. "
-#             "Câu hỏi cuối (question) tiếp tục hỏi dựa trên thông tin đã đính chính. "
-#             "expected_answer phải dựa trên thông tin đã được đính chính, không phải thông tin cũ."
-#         ),
-#     }
+    sub_type hợp lệ:
+      carry-over  — câu hỏi cuối phụ thuộc vào câu trả lời trước đó
+      correction  — user đính chính thông tin ở lượt giữa hội thoại
+    """
+    sub_instructions = {
+        MulCaseType.carry_over: (
+            "Lượt trước user hỏi 1 câu tổng quát về truyện (ví dụ: nhân vật chính là ai) và đã nhận câu trả lời. "
+            "Câu hỏi cuối (question) đào sâu hơn vào chi tiết vừa được nhắc đến — "
+            "không thể hiểu đúng nếu không đọc conversation_history. "
+            "Ví dụ: history hỏi về Tấm Cám, question hỏi 'Cô ấy được giúp đỡ bằng cách nào?' (không nhắc tên)."
+        ),
+        MulCaseType.correction: (
+            "User ban đầu hỏi nhầm tên nhân vật hoặc tên truyện, agent trả lời theo thông tin sai đó. "
+            "Sau đó user đính chính lại đúng tên/truyện. "
+            "Câu hỏi cuối (question) tiếp tục hỏi dựa trên thông tin đã đính chính. "
+            "expected_answer phải dựa trên thông tin đã được đính chính, không phải thông tin cũ."
+        ),
+    }
 
-#     instruction = sub_instructions.get(sub_type, sub_instructions["carry-over"])
+    instruction = sub_instructions.get(sub_type, sub_instructions[MulCaseType.carry_over])
 
-#     prompt = f"""Bạn là chuyên gia thiết kế bộ test đánh giá AI Agent chuyên về truyện cổ tích Việt Nam, dạng multi-turn.
-# Đọc đoạn văn dưới đây (trích từ một truyện cổ tích Việt Nam) rồi tạo ra đúng {num_pairs} test case dạng multi-turn.
+    prompt = f"""Bạn là chuyên gia thiết kế bộ test đánh giá AI Agent chuyên về truyện cổ tích Việt Nam, dạng multi-turn.
+Đọc context dưới đây, gồm nhiều chunk (trích từ một truyện cổ tích Việt Nam) rồi tạo ra đúng {num_pairs} test case dạng multi-turn.
 
-# Sub-type: {sub_type}
-# Yêu cầu đặc thù: {instruction}
+Sub-type: {sub_type.value}
+Yêu cầu đặc thù: {instruction}
 
-# Đoạn văn:
-# \"\"\"
-# {text}
-# \"\"\"
+Context:
+\"\"\"
+{text}
+\"\"\"
 
-# Trả về JSON array, mỗi phần tử có đúng các trường sau (không thêm trường khác):
-# {{
-#   "question": "<câu hỏi cuối cùng của user về truyện cổ tích>",
-#   "conversation_history": [
-#     {{"role": "user", "content": "..."}},
-#     {{"role": "assistant", "content": "..."}},
-#     "... (1-3 lượt trước question, liên quan đến truyện cổ tích)"
-#   ],
-#   "expected_answer": "<câu trả lời đúng cho question, có tính đến toàn bộ lịch sử>",
-#   "context": "<trích đoạn văn ngắn nhất đủ trả lời>",
-#   "ground_truth_ids": ["<id tài liệu nếu biết, nếu không để rỗng []>"],
-#   "metadata": {{
-#     "difficulty": "hard",
-#     "type": "multi-turn-{sub_type}"
-#   }}
-# }}
+Trả về JSON array, mỗi phần tử có đúng các trường sau (không thêm trường khác):
+[
+  {{
+    "question": "<câu hỏi cuối cùng của user, có thể mơ hồ nếu đã có history>",
+    "conversation_history": [
+      {{"role": "user", "content": "..."}},
+      {{"role": "assistant", "content": "..."}},
+      "... (1-3 lượt, kết thúc trước question)"
+    ],
+    "expected_answer": "<câu trả lời đúng cho question, có tính đến toàn bộ lịch sử>",
+    "context": "<trích đoạn văn ngắn nhất đủ trả lời>",
+    "ground_truth_ids": ["<id của các tài liệu đã dùng, nếu không dùng thì để []>"]
+  }},
+  ...
+]
 
-# Chỉ trả về JSON array thuần tuý, không markdown, không giải thích."""
+Chỉ trả về JSON array thuần tuý, không markdown, không giải thích."""
 
-#     response = await _client.chat.completions.create(
-#         model="gpt-4o-mini",
-#         messages=[{"role": "user", "content": prompt}],
-#         temperature=0.7,
-#         response_format={"type": "json_object"},
-#     )
+    response = await _client.chat.completions.create(
+        model="gpt-4o-mini",
+        messages=[{"role": "user", "content": prompt}],
+        temperature=0.7,
+        response_format={"type": "json_object"},
+    )
 
-#     raw = response.choices[0].message.content
-#     parsed = json.loads(raw)
-#     if isinstance(parsed, list):
-#         return parsed
-#     for key in ("items", "cases", "data", "questions", "qa_pairs"):
-#         if key in parsed and isinstance(parsed[key], list):
-#             return parsed[key]
-#     for v in parsed.values():
-#         if isinstance(v, list):
-#             return v
-#     return []
+    raw = response.choices[0].message.content
+    parsed = json.loads(raw)
+
+    # Unwrap nếu model trả về object bọc ngoài
+    if isinstance(parsed, dict):
+        for key in ("items", "cases", "data", "questions", "qa_pairs"):
+            if key in parsed and isinstance(parsed[key], list):
+                parsed = parsed[key]
+                break
+        else:
+            for v in parsed.values():
+                if isinstance(v, list):
+                    parsed = v
+                    break
+
+    for case in parsed:
+        case["metadata"] = {"difficulty": "hard", "type": f"multi-turn-{sub_type.value}"}
+
+    return parsed
 
 
 # Giả lập việc gọi LLM để tạo dữ liệu (Students will implement this)
