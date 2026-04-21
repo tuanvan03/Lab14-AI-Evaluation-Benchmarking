@@ -2,6 +2,7 @@ import json
 import asyncio
 import os
 import sys
+import random
 from pathlib import Path
 from typing import List, Dict
 from openai import AsyncOpenAI
@@ -12,12 +13,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 load_dotenv()
 class SingleCaseType(Enum):
-    fact_check = "fact-check"
-    adversarial_injection = "adversarial-injection"
-    adversarial_hijack = "adversarial-hijack"
-    edge_out_of_context = "edge-out-of-context"
-    edge_ambiguous = "edge-ambiguous"
-    edge_conflicting = "edge-conflicting"
+    fact_check = "fact-check" # Hoi noi dung co trong context khong
+    adversarial_injection = "adversarial-injection" # Nguoi dung co tinh nhung lenh vao de lua agent bo qua tai lieu
+    adversarial_hijack = "adversarial-hijack" # Nguoi dung yeu cau agent lam viec hoan toan ngoai pham vi truyen co tich Viet Nam
+    edge_out_of_context = "edge-out-of-context" # Hoi noi dung khong lien quan den context
+    edge_ambiguous = "edge-ambiguous" # cau hoi mo ho 
+    edge_conflicting = "edge-conflicting" # thong tin mau thuan, can phai hoi lai
 
 class MulCaseType(Enum):
     carry_over = "carry-over"
@@ -212,107 +213,106 @@ async def generate_qa_from_text() -> List[Dict]:
     qa_pairs = []
     embedder = OpenAIEmbedder()
     store = EmbeddingStore(collection_name="vietnamese_tales", embedding_fn=embedder)
-    caykhe = store.get_story_chunks_by_filename("caykhe.txt")
-    hoguom = store.get_story_chunks_by_filename("hoguom.txt")
-    nguulangchucnu = store.get_story_chunks_by_filename("nguulangchucnu.txt")
-    sodua = store.get_story_chunks_by_filename("sodua.txt")
-    thachsanh = store.get_story_chunks_by_filename("thachsanh.txt")
+    
+    # Lấy toàn bộ chunk từ các file truyện
+    story_files = ["caykhe.txt", "hoguom.txt", "nguulangchucnu.txt", "sodua.txt", "thachsanh.txt"]
+    story_db = {}
+    for sf in story_files:
+        story_db[sf] = store.get_story_chunks_by_filename(sf)
+        
+    def get_random_context() -> str:
+        # Trích ngẫu nhiên khoảng 10-15 chunks từ một truyện ngẫu nhiên
+        sf = random.choice(list(story_db.keys()))
+        chunks = story_db[sf]
+        slice_len = random.randint(10, 15)
+        if len(chunks) <= slice_len:
+            slice_chunks = chunks
+        else:
+            start_idx = random.randint(0, len(chunks) - slice_len)
+            slice_chunks = chunks[start_idx:start_idx+slice_len]
+        return str(slice_chunks)
+        
+    difficulties = ["easy", "medium", "hard"]
+    
+    # 1. Các requirements cho Single-turn tests
+    single_reqs = [
+        (SingleCaseType.fact_check, 10),
+        (SingleCaseType.adversarial_injection, 5),
+        (SingleCaseType.adversarial_hijack, 5),
+        (SingleCaseType.edge_out_of_context, 5),
+        (SingleCaseType.edge_ambiguous, 5),
+        (SingleCaseType.edge_conflicting, 5),
+    ]
+    
+    print("Bắt đầu sinh dữ liệu Single-turn đa dạng...")
+    for case_type, num_pairs in single_reqs:
+        text = get_random_context()
+        difficulty = random.choice(difficulties)
+        
+        # Thêm điều kiện riêng nới lỏng tuỳ case
+        add_instruction = None
+        if case_type == SingleCaseType.edge_out_of_context:
+            add_instruction = "sinh question dài vào nhé, tôi muốn test xem nếu question đầu vào dài thì agent sẽ trả lời như thế nào"
+            
+        print(f" - Tạo {num_pairs} cặp {case_type.value} với độ khó {difficulty}...")
+        z = await generate_single_turn(text, difficulty, case_type, num_pairs=num_pairs, add=add_instruction)
+        qa_pairs.extend(z)
 
-    #--------------------------------------------------
-    # generate_single_turn
-    #--------------------------------------------------
-
-    text = str(thachsanh[1:12])
-    difficult = "hard"
-    num_pairs = 5
-    type_case = SingleCaseType.fact_check
-    z = await generate_single_turn(text, difficult, type_case, num_pairs=num_pairs)
-    qa_pairs.extend(z)
-
-    text = str(caykhe[1:12])
-    difficult = "easy"
-    num_pairs = 5
-    type_case = SingleCaseType.fact_check
-    z = await generate_single_turn(text, difficult, type_case, num_pairs=num_pairs)
-    qa_pairs.extend(z)
-
-    text = str(hoguom[1:12])
-    difficult = "medium"
-    num_pairs = 5
-    type_case = SingleCaseType.fact_check
-    z = await generate_single_turn(text, difficult, type_case, num_pairs=num_pairs)
-    qa_pairs.extend(z)
-
-    text = str(nguulangchucnu[1:12])
-    difficult = "hard"
-    num_pairs = 5
-    type_case = SingleCaseType.fact_check
-    z = await generate_single_turn(text, difficult, type_case, num_pairs=num_pairs)
-    qa_pairs.extend(z)
-
-    text = str(sodua[1:12])
-    difficult = "easy"
-    num_pairs = 5
-    type_case = SingleCaseType.fact_check
-    z = await generate_single_turn(text, difficult, type_case, num_pairs=num_pairs)
-    qa_pairs.extend(z)
-
-    text = str(thachsanh[-19:-7])
-    difficult = "hard"
-    num_pairs = 5
-    type_case = SingleCaseType.adversarial_hijack
-    z = await generate_single_turn(text, difficult, type_case, num_pairs=num_pairs)
-    qa_pairs.extend(z)
-
-    text = str(sodua[-22:-10])
-    difficult = "hard"
-    num_pairs = 5
-    type_case = SingleCaseType.adversarial_injection
-    z = await generate_single_turn(text, difficult, type_case, num_pairs=num_pairs)
-    qa_pairs.extend(z)
-
-    text = str(nguulangchucnu[-19:-7])
-    difficult = "hard"
-    num_pairs = 5
-    type_case = SingleCaseType.edge_ambiguous
-    z = await generate_single_turn(text, difficult, type_case, num_pairs=num_pairs)
-    qa_pairs.extend(z)
-
-    text = str(hoguom[-24:-12])
-    difficult = "hard"
-    num_pairs = 5
-    type_case = SingleCaseType.edge_conflicting
-    z = await generate_single_turn(text, difficult, type_case, num_pairs=num_pairs)
-    qa_pairs.extend(z)
-
-    text = str(thachsanh[-12:])
-    difficult = "hard"
-    add = "sinh question dài vào nhé, tôi muốn test xem nếu question đầu vào dài thì agent sẽ trả lời như thế nào"
-    num_pairs = 5
-    type_case = SingleCaseType.edge_out_of_context
-    z = await generate_single_turn(text, difficult, type_case, num_pairs=num_pairs, add=add)
-    qa_pairs.extend(z)
-
-
-
-    #--------------------------------------------------
-    # generate_multi_turn
-    #--------------------------------------------------
-    text = str(thachsanh[2:14])
-    difficult = "hard"
-    num_pairs = 3
-    z = await generate_multi_turn(text, difficult, MulCaseType.correction, num_pairs=num_pairs)
-    qa_pairs.extend(z)
-
-    text = str(thachsanh[3:15])
-    difficult = "medium"
-    num_pairs = 2
-    z = await generate_multi_turn(text, difficult, MulCaseType.carry_over, num_pairs=num_pairs)
-    qa_pairs.extend(z)
-
-
+    # 2. Các requirements cho Multi-turn tests
+    multi_reqs = [
+        (MulCaseType.carry_over, 5),
+        (MulCaseType.correction, 5),
+    ]
+    
+    print("\nBắt đầu sinh dữ liệu Multi-turn đa dạng...")
+    for sub_type, num_pairs in multi_reqs:
+        text = get_random_context()
+        difficulty = random.choice(difficulties)
+        
+        print(f" - Tạo {num_pairs} cặp {sub_type.value} với độ khó {difficulty}...")
+        z = await generate_multi_turn(text, difficulty, sub_type, num_pairs=num_pairs)
+        qa_pairs.extend(z)
+        
+    # Xáo trộn QA Pairs để Benchmark công bằng và ngẫu nhiên hơn
+    random.shuffle(qa_pairs)
+    
     return qa_pairs
     
+
+from collections import Counter
+
+def print_statistics(qa_pairs: List[Dict]):
+    print("\n" + "="*40)
+    print(" BẢNG THỐNG KÊ DỮ LIỆU ĐÃ SINH")
+    print("="*40)
+    
+    total = len(qa_pairs)
+    if total == 0:
+        print("Chưa có dữ liệu nào được sinh ra.")
+        return
+        
+    print(f"Tổng số test case: {total}")
+    
+    type_counter = Counter()
+    diff_counter = Counter()
+    
+    for pair in qa_pairs:
+        meta = pair.get("metadata", {})
+        type_case = meta.get("type", "unknown")
+        diff = meta.get("difficulty", "unknown")
+        
+        type_counter[type_case] += 1
+        diff_counter[diff] += 1
+        
+    print("\n--- Phân bổ theo Loại (Type) ---")
+    for t, count in type_counter.most_common():
+        print(f"  - {t}: {count} ({count/total*100:.1f}%)")
+        
+    print("\n--- Phân bổ theo Độ khó (Difficulty) ---")
+    for d, count in diff_counter.most_common():
+        print(f"  - {d}: {count} ({count/total*100:.1f}%)")
+        
+    print("="*40 + "\n")
 
 async def main():
     qa_pairs = await generate_qa_from_text()
@@ -320,6 +320,8 @@ async def main():
     with open("data/golden_set.jsonl", "w", encoding="utf-8") as f:
         for pair in qa_pairs:
             f.write(json.dumps(pair, ensure_ascii=False) + "\n")
+            
+    print_statistics(qa_pairs)
     print("Done! Saved to data/golden_set.jsonl")
 
 if __name__ == "__main__":
