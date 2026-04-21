@@ -13,7 +13,11 @@ class BenchmarkRunner:
         start_time = time.perf_counter()
         
         # 1. Gọi Agent
-        response = await self.agent.query(test_case["question"])
+        if "conversation_history" in test_case:
+            response = await self.agent.query(test_case["question"], test_case["conversation_history"])
+        else:
+            response = await self.agent.query(test_case["question"])
+
         latency = time.perf_counter() - start_time
         
         # 2. Chạy RAGAS metrics
