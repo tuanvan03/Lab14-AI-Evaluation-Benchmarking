@@ -118,5 +118,8 @@ class EmbeddingStore:
                 "metadata": results['metadatas'][0]
             })
             chunk_idx += 1
+
+        for chunk in chunks:
+            del chunk['metadata']
             
         return chunks
