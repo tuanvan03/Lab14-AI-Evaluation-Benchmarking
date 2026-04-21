@@ -4,6 +4,7 @@ from src.chunking import RecursiveChunker
 from src.embedding import OpenAIEmbedder
 from src.store import EmbeddingStore
 from src.model import Document
+import json
 
 def preprocess_text(text: str):
     """
@@ -150,8 +151,9 @@ def test_get_story_chunks(filename: str):
     print(f"=> Tìm thấy tổng cộng {len(chunks)} chunks cho file '{filename}'.")
     for i, chunk in enumerate(chunks):
         print(f"\n[Chunk {i}] ID: {chunk['id']}")
-        preview = chunk['content'][:150].replace('\n', ' ')
-        print(f"Content: {preview}...")
+        # preview = chunk['content'][:150].replace('\n', ' ')
+        # print(f"Content: {preview}...")
+        print(json.dumps(chunk, indent=2, ensure_ascii=False))
 
 if __name__ == "__main__":
     # test_preprocessing("documents/caykhe.txt")
