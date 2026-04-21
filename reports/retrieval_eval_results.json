@@ -1,0 +1,505 @@
+{
+  "hit_rate": 0.896551724137931,
+  "mrr": 0.6620689655172414,
+  "top_k": 5,
+  "total_evaluated": 29,
+  "details": [
+    {
+      "question": "Sọ Dừa được mẹ đặt tên là gì?",
+      "expected_ids": [
+        "sodua.txt_story_1"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_1",
+        "sodua.txt_story_7",
+        "sodua.txt_story_6",
+        "sodua.txt_story_5",
+        "sodua.txt_story_2"
+      ],
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "difficulty": "medium",
+      "type": "fact-check"
+    },
+    {
+      "question": "Trong các lần mang cơm cho Sọ Dừa, ai là người không hắt hủi cậu?",
+      "expected_ids": [
+        "sodua.txt_story_4"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_5",
+        "sodua.txt_story_4",
+        "sodua.txt_story_3",
+        "sodua.txt_story_1",
+        "sodua.txt_story_6"
+      ],
+      "hit": true,
+      "reciprocal_rank": 0.5,
+      "difficulty": "medium",
+      "type": "fact-check"
+    },
+    {
+      "question": "Sọ Dừa đã làm gì để trở thành trạng nguyên?",
+      "expected_ids": [
+        "sodua.txt_story_10"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_5",
+        "sodua.txt_story_1",
+        "sodua.txt_story_10",
+        "sodua.txt_story_4",
+        "sodua.txt_story_2"
+      ],
+      "hit": true,
+      "reciprocal_rank": 0.3333333333333333,
+      "difficulty": "medium",
+      "type": "fact-check"
+    },
+    {
+      "question": "Cô em đã sống sót như thế nào trên đảo?",
+      "expected_ids": [
+        "sodua.txt_story_12"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_13",
+        "sodua.txt_story_12",
+        "caykhe.txt_story_15",
+        "caykhe.txt_story_18",
+        "caykhe.txt_story_3"
+      ],
+      "hit": true,
+      "reciprocal_rank": 0.5,
+      "difficulty": "medium",
+      "type": "fact-check"
+    },
+    {
+      "question": "Có sự khác biệt nào giữa hai dị bản về cách Ngưu Lang chăm sóc con bò già không? Bạn có thể chỉ ra sự mâu thuẫn giữa chúng không?",
+      "expected_ids": [
+        "nguulangchucnu.txt_story_6",
+        "nguulangchucnu.txt_story_7"
+      ],
+      "retrieved_ids": [
+        "nguulangchucnu.txt_story_4",
+        "nguulangchucnu.txt_story_8",
+        "nguulangchucnu.txt_story_6",
+        "nguulangchucnu.txt_story_3",
+        "nguulangchucnu.txt_story_9"
+      ],
+      "hit": true,
+      "reciprocal_rank": 0.3333333333333333,
+      "difficulty": "medium",
+      "type": "edge-conflicting"
+    },
+    {
+      "question": "Phú ông đã nghĩ gì về việc nuôi Sọ Dừa?",
+      "expected_ids": [
+        "sodua.txt_story_2"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_3",
+        "sodua.txt_story_2",
+        "sodua.txt_story_5",
+        "sodua.txt_story_6",
+        "sodua.txt_story_7"
+      ],
+      "hit": true,
+      "reciprocal_rank": 0.5,
+      "difficulty": "medium",
+      "type": "fact-check"
+    },
+    {
+      "question": "Trong hai dị bản về việc Chức Nữ xuống trần gian, có thông tin nào mâu thuẫn không? Bạn có thể chỉ ra không?",
+      "expected_ids": [
+        "nguulangchucnu.txt_story_10",
+        "nguulangchucnu.txt_story_11"
+      ],
+      "retrieved_ids": [
+        "nguulangchucnu.txt_story_10",
+        "nguulangchucnu.txt_story_11",
+        "nguulangchucnu.txt_story_12",
+        "hoguom.txt_story_18",
+        "caykhe.txt_story_15"
+      ],
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "difficulty": "medium",
+      "type": "edge-conflicting"
+    },
+    {
+      "question": "Trước khi đi, Sọ Dừa đã đưa cho vợ những vật dụng nào?",
+      "expected_ids": [
+        "sodua.txt_story_11"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_11",
+        "sodua.txt_story_10",
+        "sodua.txt_story_7",
+        "sodua.txt_story_6",
+        "sodua.txt_story_5"
+      ],
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "difficulty": "medium",
+      "type": "fact-check"
+    },
+    {
+      "question": "Sọ Dừa đã làm gì để chứng minh mình không phải người thường?",
+      "expected_ids": [
+        "sodua.txt_story_2"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_5",
+        "sodua.txt_story_4",
+        "sodua.txt_story_1",
+        "sodua.txt_story_9",
+        "sodua.txt_story_6"
+      ],
+      "hit": false,
+      "reciprocal_rank": 0.0,
+      "difficulty": "medium",
+      "type": "fact-check"
+    },
+    {
+      "question": "Sọ Dừa đã làm gì để chứng minh bản thân trước phú ông?",
+      "expected_ids": [
+        "sodua.txt_story_2"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_5",
+        "sodua.txt_story_9",
+        "sodua.txt_story_6",
+        "sodua.txt_story_10",
+        "sodua.txt_story_1"
+      ],
+      "hit": false,
+      "reciprocal_rank": 0.0,
+      "difficulty": "medium",
+      "type": "carry-over"
+    },
+    {
+      "question": "Hai dị bản mô tả về kết quả sau khi bò già khỏi bệnh có sự khác nhau. Bạn có thể chỉ ra mâu thuẫn giữa hai dị bản này không?",
+      "expected_ids": [
+        "nguulangchucnu.txt_story_8",
+        "nguulangchucnu.txt_story_9"
+      ],
+      "retrieved_ids": [
+        "nguulangchucnu.txt_story_8",
+        "nguulangchucnu.txt_story_7",
+        "nguulangchucnu.txt_story_6",
+        "nguulangchucnu.txt_story_5",
+        "nguulangchucnu.txt_story_4"
+      ],
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "difficulty": "medium",
+      "type": "edge-conflicting"
+    },
+    {
+      "question": "Tại sao mọi người lại cảm thấy sửng sốt trong ngày cưới?",
+      "expected_ids": [
+        "sodua.txt_story_9"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_9",
+        "sodua.txt_story_10",
+        "caykhe.txt_story_20",
+        "sodua.txt_story_15",
+        "caykhe.txt_story_3"
+      ],
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "difficulty": "medium",
+      "type": "carry-over"
+    },
+    {
+      "question": "Khi phú ông thấy sính lễ, ai trong ba cô con gái đã đồng ý?",
+      "expected_ids": [
+        "sodua.txt_story_8"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_8",
+        "sodua.txt_story_3",
+        "sodua.txt_story_9",
+        "nguulangchucnu.txt_story_18",
+        "sodua.txt_story_6"
+      ],
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "difficulty": "medium",
+      "type": "fact-check"
+    },
+    {
+      "question": "Ai là người đối xử tốt với Sọ Dừa trong gia đình phú ông?",
+      "expected_ids": [
+        "sodua.txt_story_3"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_4",
+        "sodua.txt_story_6",
+        "sodua.txt_story_5",
+        "sodua.txt_story_3",
+        "sodua.txt_story_1"
+      ],
+      "hit": true,
+      "reciprocal_rank": 0.25,
+      "difficulty": "medium",
+      "type": "fact-check"
+    },
+    {
+      "question": "Khi Sọ Dừa chăn bò, phú ông có cảm thấy lo lắng không?",
+      "expected_ids": [
+        "sodua.txt_story_2"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_2",
+        "sodua.txt_story_5",
+        "sodua.txt_story_1",
+        "sodua.txt_story_6",
+        "sodua.txt_story_10"
+      ],
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "difficulty": "medium",
+      "type": "fact-check"
+    },
+    {
+      "question": "Phú ông đã yêu cầu Sọ Dừa chuẩn bị những gì để cưới con gái ông?",
+      "expected_ids": [
+        "sodua.txt_story_7"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_6",
+        "sodua.txt_story_3",
+        "sodua.txt_story_7",
+        "sodua.txt_story_8",
+        "sodua.txt_story_9"
+      ],
+      "hit": true,
+      "reciprocal_rank": 0.3333333333333333,
+      "difficulty": "medium",
+      "type": "fact-check"
+    },
+    {
+      "question": "Cô út đã làm gì để sinh tồn trên đảo?",
+      "expected_ids": [
+        "sodua.txt_story_12"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_13",
+        "sodua.txt_story_12",
+        "caykhe.txt_story_29",
+        "caykhe.txt_story_12",
+        "caykhe.txt_story_15"
+      ],
+      "hit": true,
+      "reciprocal_rank": 0.5,
+      "difficulty": "medium",
+      "type": "fact-check"
+    },
+    {
+      "question": "Sau khi cưới, Sọ Dừa sống với vợ như thế nào?",
+      "expected_ids": [
+        "sodua.txt_story_10"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_10",
+        "sodua.txt_story_9",
+        "sodua.txt_story_6",
+        "sodua.txt_story_0",
+        "sodua.txt_story_4"
+      ],
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "difficulty": "medium",
+      "type": "fact-check"
+    },
+    {
+      "question": "Có ai đã giúp Sọ Dừa trong việc mang cơm không?",
+      "expected_ids": [
+        "sodua.txt_story_3"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_5",
+        "sodua.txt_story_2",
+        "sodua.txt_story_7",
+        "sodua.txt_story_1",
+        "sodua.txt_story_3"
+      ],
+      "hit": true,
+      "reciprocal_rank": 0.2,
+      "difficulty": "medium",
+      "type": "fact-check"
+    },
+    {
+      "question": "Cô ấy được giúp đỡ bằng cách nào?",
+      "expected_ids": [
+        "sodua.txt_story_12"
+      ],
+      "retrieved_ids": [
+        "thachsanh.txt_story_2",
+        "sodua.txt_story_12",
+        "sodua.txt_story_7",
+        "nguulangchucnu.txt_story_9",
+        "caykhe.txt_story_0"
+      ],
+      "hit": true,
+      "reciprocal_rank": 0.5,
+      "difficulty": "medium",
+      "type": "carry-over"
+    },
+    {
+      "question": "Cô út đã thấy điều gì kỳ lạ khi đến mang cơm cho Sọ Dừa?",
+      "expected_ids": [
+        "sodua.txt_story_5"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_5",
+        "sodua.txt_story_6",
+        "sodua.txt_story_7",
+        "sodua.txt_story_10",
+        "sodua.txt_story_9"
+      ],
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "difficulty": "medium",
+      "type": "fact-check"
+    },
+    {
+      "question": "Sọ Dừa đã chuẩn bị những gì để hỏi cưới cô út?",
+      "expected_ids": [
+        "sodua.txt_story_7"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_7",
+        "sodua.txt_story_9",
+        "sodua.txt_story_6",
+        "sodua.txt_story_5",
+        "sodua.txt_story_1"
+      ],
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "difficulty": "medium",
+      "type": "carry-over"
+    },
+    {
+      "question": "Sọ Dừa đã làm gì khi về nhà hỏi cưới cô gái phú ông?",
+      "expected_ids": [
+        "sodua.txt_story_6"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_6",
+        "sodua.txt_story_7",
+        "sodua.txt_story_9",
+        "sodua.txt_story_3",
+        "sodua.txt_story_8"
+      ],
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "difficulty": "medium",
+      "type": "fact-check"
+    },
+    {
+      "question": "Về việc Ngọc Hoàng và Vương Mẫu Nương Nương can thiệp vào cuộc sống của Ngưu Lang và Chức Nữ, có điều gì mâu thuẫn giữa hai dị bản không?",
+      "expected_ids": [
+        "nguulangchucnu.txt_story_12",
+        "nguulangchucnu.txt_story_13"
+      ],
+      "retrieved_ids": [
+        "nguulangchucnu.txt_story_11",
+        "nguulangchucnu.txt_story_14",
+        "nguulangchucnu.txt_story_15",
+        "nguulangchucnu.txt_story_12",
+        "nguulangchucnu.txt_story_10"
+      ],
+      "hit": true,
+      "reciprocal_rank": 0.25,
+      "difficulty": "medium",
+      "type": "edge-conflicting"
+    },
+    {
+      "question": "Cô em đã có phản ứng như thế nào với Sọ Dừa?",
+      "expected_ids": [
+        "sodua.txt_story_3"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_4",
+        "sodua.txt_story_5",
+        "sodua.txt_story_6",
+        "sodua.txt_story_10",
+        "sodua.txt_story_9"
+      ],
+      "hit": false,
+      "reciprocal_rank": 0.0,
+      "difficulty": "medium",
+      "type": "carry-over"
+    },
+    {
+      "question": "Trong ngày cưới, mọi người thấy Sọ Dừa như thế nào?",
+      "expected_ids": [
+        "sodua.txt_story_9"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_9",
+        "sodua.txt_story_10",
+        "sodua.txt_story_6",
+        "sodua.txt_story_5",
+        "sodua.txt_story_3"
+      ],
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "difficulty": "medium",
+      "type": "fact-check"
+    },
+    {
+      "question": "Hai cô chị đã làm gì để hại cô em?",
+      "expected_ids": [
+        "sodua.txt_story_12"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_12",
+        "sodua.txt_story_15",
+        "caykhe.txt_story_3",
+        "sodua.txt_story_4",
+        "caykhe.txt_story_2"
+      ],
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "difficulty": "medium",
+      "type": "fact-check"
+    },
+    {
+      "question": "Trong hai dị bản, cụ già nói với Ngưu Lang về con bò già mà Ngưu Lang cần chăm sóc. Một dị bản nói rằng Ngưu Lang có thể dẫn con bò về nhà sau khi nó khỏi bệnh, trong khi dị bản khác không đề cập đến điều này. Bạn có thể chỉ ra sự mâu thuẫn giữa hai dị bản và trình bày cả hai không?",
+      "expected_ids": [
+        "nguulangchucnu.txt_story_4"
+      ],
+      "retrieved_ids": [
+        "nguulangchucnu.txt_story_4",
+        "nguulangchucnu.txt_story_8",
+        "nguulangchucnu.txt_story_3",
+        "nguulangchucnu.txt_story_9",
+        "nguulangchucnu.txt_story_6"
+      ],
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "difficulty": "medium",
+      "type": "edge-conflicting"
+    },
+    {
+      "question": "Trước khi đi sứ, Sọ Dừa đã tặng vợ những gì?",
+      "expected_ids": [
+        "sodua.txt_story_11"
+      ],
+      "retrieved_ids": [
+        "sodua.txt_story_11",
+        "sodua.txt_story_10",
+        "sodua.txt_story_7",
+        "sodua.txt_story_6",
+        "sodua.txt_story_9"
+      ],
+      "hit": true,
+      "reciprocal_rank": 1.0,
+      "difficulty": "medium",
+      "type": "fact-check"
+    }
+  ]
+}
