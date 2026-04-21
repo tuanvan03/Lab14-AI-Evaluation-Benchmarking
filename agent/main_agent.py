@@ -1,59 +1,34 @@
+import sys
+sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
+
 import asyncio
 import os
 from typing import List, Dict
 from openai import AsyncOpenAI
 from dotenv import load_dotenv
+from src.store import EmbeddingStore
+from src.embedding import OpenAIEmbedder
 
 load_dotenv()
 
-# ---------------------------------------------------------------------------
-# Mock Vector DB — thay bằng kết nối thật khi có
-# ---------------------------------------------------------------------------
-
-MOCK_DOCUMENTS = [
-    {
-        "id": "doc_001",
-        "content": "Để đổi mật khẩu, người dùng truy cập vào trang Cài đặt > Bảo mật > Đổi mật khẩu. Nhập mật khẩu cũ, sau đó nhập mật khẩu mới hai lần để xác nhận. Mật khẩu mới phải có ít nhất 8 ký tự, gồm chữ hoa, chữ thường và số.",
-        "source": "policy_handbook.pdf",
-    },
-    {
-        "id": "doc_002",
-        "content": "Chính sách hoàn tiền: Khách hàng có thể yêu cầu hoàn tiền trong vòng 30 ngày kể từ ngày mua hàng. Sản phẩm phải còn nguyên vẹn, chưa qua sử dụng. Liên hệ bộ phận CSKH qua email support@company.com hoặc hotline 1800-xxxx.",
-        "source": "refund_policy.pdf",
-    },
-    {
-        "id": "doc_003",
-        "content": "Tài khoản bị khóa sau 5 lần đăng nhập sai liên tiếp. Để mở khóa, người dùng nhấn 'Quên mật khẩu' trên trang đăng nhập, nhập email đã đăng ký để nhận link đặt lại mật khẩu.",
-        "source": "security_guide.pdf",
-    },
-    {
-        "id": "doc_004",
-        "content": "Gói dịch vụ Premium bao gồm: hỗ trợ 24/7, lưu trữ không giới hạn, và quyền truy cập tất cả tính năng nâng cao. Giá 199.000 VNĐ/tháng hoặc 1.990.000 VNĐ/năm (tiết kiệm 2 tháng).",
-        "source": "pricing.pdf",
-    },
-    {
-        "id": "doc_005",
-        "content": "Quy trình onboarding khách hàng mới: (1) Tạo tài khoản, (2) Xác minh email, (3) Hoàn thiện hồ sơ, (4) Chọn gói dịch vụ phù hợp. Đội ngũ tư vấn sẽ liên hệ trong 24 giờ sau khi đăng ký.",
-        "source": "onboarding_guide.pdf",
-    },
-]
-
+db_embedder = OpenAIEmbedder()
+db_store = EmbeddingStore(collection_name="vietnamese_tales", embedding_fn=db_embedder)
 
 def search_vector_db(query: str, top_k: int = 3) -> List[Dict]:
     """
-    Mock vector search — trả về top_k tài liệu cố định.
-    Thay bằng kết nối ChromaDB/Pinecone/Weaviate khi có vector DB thật.
+    Thực hiện truy vấn thực tế vào ChromaDB thông qua EmbeddingStore.
     """
-    # Giả lập relevance score đơn giản dựa trên keyword overlap
-    query_words = set(query.lower().split())
-    scored = []
-    for doc in MOCK_DOCUMENTS:
-        doc_words = set(doc["content"].lower().split())
-        score = len(query_words & doc_words)
-        scored.append((score, doc))
-
-    scored.sort(key=lambda x: x[0], reverse=True)
-    return [doc for _, doc in scored[:top_k]]
+    results = db_store.search(query=query, top_k=top_k)
+    mapped_docs = []
+    
+    for r in results:
+        mapped_docs.append({
+            "id": r["id"],
+            "content": r["content"],
+            "source": r["metadata"].get("source", "Unknown_Source") if r["metadata"] else "Unknown_Source"
+        })
+        
+    return mapped_docs
 
 
 # ---------------------------------------------------------------------------
