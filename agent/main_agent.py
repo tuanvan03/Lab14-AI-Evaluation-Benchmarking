@@ -158,11 +158,52 @@ class MainAgent:
 
 
 if __name__ == "__main__":
-    async def test():
+    async def chat_loop():
         agent = MainAgent()
+        print("=== CHAT VỚI RAG AGENT (TRUYỆN CỔ TÍCH) ===")
+        print("Gõ 'quit' hoặc 'exit' để thoát.")
+        
+        chat_history = []
+        
+        while True:
+            try:
+                user_input = input("\nBạn: ")
+            except (EOFError, KeyboardInterrupt):
+                print("\nTạm biệt!")
+                break
+                
+            user_input = user_input.strip()
+            if user_input.lower() in ['quit', 'exit']:
+                print("Tạm biệt!")
+                break
+                
+            if not user_input:
+                continue
+                
+            print(f"Agent đang xử lý (Vui lòng đợi)...")
+            try:
+                resp = await agent.query(user_input, chat_history=chat_history)
+                
+                answer = resp["answer"]
+                metadata = resp["metadata"]
+                
+                print(f"\nAgent: {answer}")
+                print(f"\n--- [Debug Info] ---")
+                print(f"Contexts: {resp['contexts']}")
+                print(f"Rewritten Query: {metadata['search_query']}")
+                print(f"Query Type: {metadata['query_type']}")
+                print(f"Sources: {metadata['sources']}")
+                print(f"Tokens Used: {metadata['tokens_used']}")
+                print(f"--------------------")
+                
+                # Cập nhật lịch sử multi-turn
+                chat_history.append({"role": "user", "content": user_input})
+                chat_history.append({"role": "assistant", "content": answer})
+                
+                # Giữ lại tối đa 3 turn gần nhất (6 messages) để tránh tràn token
+                if len(chat_history) > 6:
+                    chat_history = chat_history[-6:]
+            except Exception as e:
+                print(f"Lỗi: {e}")
 
-        # Single-turn
-        resp = await agent.query("Trong câu chuyện cây khế, bài học rút ra là gì ?")
-        print(json.dumps(resp, ensure_ascii=False, indent=2))
-
-    asyncio.run(test())
+    asyncio.run(chat_loop())
