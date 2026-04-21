@@ -39,10 +39,19 @@ Trích xuất kết quả bằng định dạng JSON bao gồm: "accuracy_score"
                 response_format={"type": "json_object"},
                 max_tokens=200
             )
-            return json.loads(response.choices[0].message.content)
+            content = json.loads(response.choices[0].message.content)
+            usage = {
+                "prompt_tokens": response.usage.prompt_tokens,
+                "completion_tokens": response.usage.completion_tokens,
+                "total_tokens": response.usage.total_tokens
+            }
+            return {"content": content, "usage": usage}
         except Exception as e:
             print(f"Error calling judge {model}: {e}")
-            return {"accuracy_score": 3, "tone_score": 3, "reasoning": "Error occurred"}
+            return {
+                "content": {"accuracy_score": 3, "tone_score": 3, "reasoning": "Error occurred"},
+                "usage": {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+            }
 
     async def evaluate_multi_judge(self, question: str, answer: str, ground_truth: str) -> Dict[str, Any]:
         """
@@ -51,10 +60,13 @@ Trích xuất kết quả bằng định dạng JSON bao gồm: "accuracy_score"
         prompt = self._build_prompt(question, answer, ground_truth)
         
         # Chạy song song 2 model
-        result_a, result_b = await asyncio.gather(
+        resp_a, resp_b = await asyncio.gather(
             self._call_model(self.model_a, prompt),
             self._call_model(self.model_b, prompt)
         )
+        
+        result_a = resp_a["content"]
+        result_b = resp_b["content"]
         
         # Tính điểm Accuracy (ta sẽ ưu tiên điểm accuracy là điểm chính)
         score_a = result_a.get("accuracy_score", 3)
@@ -81,7 +93,11 @@ Trích xuất kết quả bằng định dạng JSON bao gồm: "accuracy_score"
             "final_score": final_score,
             "agreement_rate": agreement,
             "individual_scores": {self.model_a: score_a, self.model_b: score_b},
-            "reasoning": reasoning
+            "reasoning": reasoning,
+            "usage": {
+                self.model_a: resp_a["usage"],
+                self.model_b: resp_b["usage"]
+            }
         }
 
     async def check_position_bias(self, response_a: str, response_b: str):

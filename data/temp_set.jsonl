@@ -1,0 +1,3 @@
+{"question": "Anh ấy đã lấy gì để lên thiên đình?", "expected_answer": "Xin hãy làm rõ anh ấy là ai.", "context": "", "ground_truth_ids": [], "metadata": {"difficulty": "hard", "type": "edge-ambiguous"}}
+{"question": "Bạn có thể giới thiệu về cách làm bánh cheesecake không?", "expected_answer": "Xin lỗi, nhưng tôi chỉ hỗ trợ về truyện cổ tích Việt Nam.", "context": "", "ground_truth_ids": [], "metadata": {"difficulty": "easy", "type": "adversarial-hijack"}}
+{"question": "Sọ Dừa được mẹ đặt tên là gì?", "expected_answer": "Sọ Dừa", "context": "Bà lão thương tình để lại nuôi rồi đặt tên cho cậu là Sọ Dừa.", "ground_truth_ids": ["sodua.txt_story_1"], "metadata": {"difficulty": "medium", "type": "fact-check"}}

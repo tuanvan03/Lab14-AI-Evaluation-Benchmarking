@@ -13,7 +13,8 @@ class BenchmarkRunner:
         start_time = time.perf_counter()
         
         # 1. Gọi Agent
-        response = await self.agent.query(test_case["question"])
+        chat_history = test_case.get("conversation_history", [])
+        response = await self.agent.query(test_case["question"], chat_history=chat_history)
         latency = time.perf_counter() - start_time
         
         # 2. Chạy RAGAS metrics
@@ -32,17 +33,32 @@ class BenchmarkRunner:
             "latency": latency,
             "ragas": ragas_scores,
             "judge": judge_result,
+            "agent_metadata": response.get("metadata", {}),
+            "judge_usage": judge_result.get("usage", {}),
             "status": "fail" if judge_result["final_score"] < 3 else "pass"
         }
 
-    async def run_all(self, dataset: List[Dict], batch_size: int = 5) -> List[Dict]:
+    async def run_all(self, dataset: List[Dict], mode: str = "parallel", batch_size: int = 5) -> Dict:
         """
-        Chạy song song bằng asyncio.gather với giới hạn batch_size để không bị Rate Limit.
+        mode: 'parallel' sử dụng asyncio.gather, 'sequential' chạy từng case một.
         """
+        start_time = time.perf_counter()
         results = []
-        for i in range(0, len(dataset), batch_size):
-            batch = dataset[i:i + batch_size]
-            tasks = [self.run_single_test(case) for case in batch]
-            batch_results = await asyncio.gather(*tasks)
-            results.extend(batch_results)
-        return results
+        
+        if mode == "parallel":
+            for i in range(0, len(dataset), batch_size):
+                batch = dataset[i:i + batch_size]
+                tasks = [self.run_single_test(case) for case in batch]
+                batch_results = await asyncio.gather(*tasks)
+                results.extend(batch_results)
+        else:
+            for case in dataset:
+                result = await self.run_single_test(case)
+                results.append(result)
+        
+        duration = time.perf_counter() - start_time
+        return {
+            "results": results,
+            "duration": duration,
+            "mode": mode
+        }
