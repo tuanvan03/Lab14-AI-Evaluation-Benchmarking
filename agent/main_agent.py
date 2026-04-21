@@ -56,6 +56,7 @@ Phong cách trả lời:
 - Ngắn gọn, rõ ràng, chuyên nghiệp
 - Trả lời bằng tiếng Việt"""
 
+
 REWRITE_PROMPT = """Dựa vào lịch sử hội thoại và câu hỏi mới nhất của người dùng, hãy phân tích để thực hiện 2 việc:
 1. Viết lại câu hỏi thành một câu độc lập, đầy đủ ngữ cảnh để truy vấn tài liệu.
 2. Xác định loại thông tin (type) mà người dùng đang tìm kiếm:
@@ -66,7 +67,8 @@ Trả về kết quả dưới dạng JSON (thuần tuý, không markdown) gồm
 {
   "search_query": "<câu query dùng tìm kiếm>",
   "query_type": "story" // hoặc "lesson"
-}"""
+}
+"""
 
 
 class MainAgent:
