@@ -236,7 +236,7 @@ async def generate_qa_from_text() -> List[Dict]:
     
     # 1. Các requirements cho Single-turn tests
     single_reqs = [
-        (SingleCaseType.fact_check, 10),
+        (SingleCaseType.fact_check, 20),
         (SingleCaseType.adversarial_injection, 5),
         (SingleCaseType.adversarial_hijack, 5),
         (SingleCaseType.edge_out_of_context, 5),
