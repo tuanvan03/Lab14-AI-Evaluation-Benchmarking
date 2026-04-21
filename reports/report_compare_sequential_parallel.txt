@@ -1,0 +1,44 @@
+=== Performance Comparison Report ===
+Version: Agent_V1_Base
+----------------------------------------
+Sequential Summary:
+{
+  "metadata": {
+    "version": "Agent_V1_Base",
+    "total": 54,
+    "timestamp": "2026-04-21 17:37:36",
+    "duration_sec": 249.14,
+    "mode": "sequential",
+    "total_cost_usd": 0.2923288999999999,
+    "total_tokens": 82975
+  },
+  "metrics": {
+    "avg_score": 3.2222222222222223,
+    "hit_rate": 0.4074074074074074,
+    "avg_mrr": 0.3333333333333333,
+    "agreement_rate": 0.8925925925925924
+  }
+}
+
+Parallel Summary:
+{
+  "metadata": {
+    "version": "Agent_V1_Base",
+    "total": 54,
+    "timestamp": "2026-04-21 17:38:50",
+    "duration_sec": 74.11,
+    "mode": "parallel",
+    "total_cost_usd": 0.29113340000000015,
+    "total_tokens": 82617
+  },
+  "metrics": {
+    "avg_score": 3.212962962962963,
+    "hit_rate": 0.4074074074074074,
+    "avg_mrr": 0.3333333333333333,
+    "agreement_rate": 0.9166666666666666
+  }
+}
+
+----------------------------------------
+Speedup Factor: 3.36x
+=====================================

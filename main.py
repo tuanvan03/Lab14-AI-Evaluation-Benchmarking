@@ -6,6 +6,7 @@ from engine.runner import BenchmarkRunner
 from agent.main_agent import MainAgent
 from engine.llm_judge import LLMJudge
 from engine.retrieval_eval import RetrievalEvaluator
+from typing import List, Dict
 
 class ExpertEvaluator:
     def __init__(self):
@@ -111,7 +112,18 @@ async def main():
     print(f"\nSequential Time: {v1_seq_summary['metadata']['duration_sec']}s")
     print(f"Parallel Time:   {v1_par_summary['metadata']['duration_sec']}s")
     speedup = v1_seq_summary['metadata']['duration_sec'] / v1_par_summary['metadata']['duration_sec']
-    print(f"Speedup Factor:  {speedup:.2f}x")
+
+    with open("reports/report_compare_sequential_parallel.txt", "w", encoding="utf-8") as f:
+        f.write("=== Performance Comparison Report ===\n")
+        f.write(f"Version: Agent_V1_Base\n")
+        f.write("-" * 40 + "\n")
+        
+        f.write(f"Sequential Summary:\n{json.dumps(v1_seq_summary, ensure_ascii=False, indent=2)}\n\n")
+        f.write(f"Parallel Summary:\n{json.dumps(v1_par_summary, ensure_ascii=False, indent=2)}\n\n")
+        
+        f.write("-" * 40 + "\n")
+        f.write(f"Speedup Factor: {speedup:.2f}x\n")
+        f.write("=====================================\n")
 
     # 2. Chạy V2 Parallel
     print("\n--- OPTIMIZED AGENT (V2) ---")
