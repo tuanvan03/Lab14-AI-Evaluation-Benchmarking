@@ -1,24 +1,27 @@
+import os
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 
 import asyncio
-import os
 from typing import List, Dict
 from openai import AsyncOpenAI
 from dotenv import load_dotenv
 from src.store import EmbeddingStore
 from src.embedding import OpenAIEmbedder
+import json
+
 
 load_dotenv()
 
 db_embedder = OpenAIEmbedder()
 db_store = EmbeddingStore(collection_name="vietnamese_tales", embedding_fn=db_embedder)
 
-def search_vector_db(query: str, top_k: int = 3) -> List[Dict]:
+def search_vector_db(query: str, top_k: int = 3, type="story") -> List[Dict]:
     """
     Thực hiện truy vấn thực tế vào ChromaDB thông qua EmbeddingStore.
     """
-    results = db_store.search(query=query, top_k=top_k)
+
+    results = db_store.search_with_filter(query=query, top_k=top_k, metadata_filter={"type": type})
     mapped_docs = []
     
     for r in results:
@@ -53,8 +56,17 @@ Phong cách trả lời:
 - Ngắn gọn, rõ ràng, chuyên nghiệp
 - Trả lời bằng tiếng Việt"""
 
-REWRITE_PROMPT = """Dựa vào lịch sử hội thoại và câu hỏi mới nhất của người dùng, hãy viết lại câu hỏi thành một câu độc lập, đầy đủ ngữ cảnh để dùng truy vấn tìm kiếm tài liệu.
-Chỉ trả về câu query đã viết lại, không giải thích thêm."""
+REWRITE_PROMPT = """Dựa vào lịch sử hội thoại và câu hỏi mới nhất của người dùng, hãy phân tích để thực hiện 2 việc:
+1. Viết lại câu hỏi thành một câu độc lập, đầy đủ ngữ cảnh để truy vấn tài liệu.
+2. Xác định loại thông tin (type) mà người dùng đang tìm kiếm:
+   - "lesson": Nếu câu hỏi về bài học rút ra, ý nghĩa, đạo lý, tác dụng giáo dục.
+   - "story": Nếu câu hỏi về diễn biến, nhân vật, cốt truyện, nội dung truyện.
+
+Trả về kết quả dưới dạng JSON (thuần tuý, không markdown) gồm 2 trường:
+{
+  "search_query": "<câu query dùng tìm kiếm>",
+  "query_type": "story" // hoặc "lesson"
+}"""
 
 
 class MainAgent:
@@ -63,7 +75,7 @@ class MainAgent:
         self.model = model
         self.client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-    async def _rewrite_query(self, question: str, chat_history: List[Dict]) -> str:
+    async def _rewrite_query(self, question: str, chat_history: List[Dict]) -> Dict[str, str]:
         history_text = (
             "\n".join(f"{m['role'].capitalize()}: {m['content']}" for m in chat_history)
             if chat_history else "Không có lịch sử."
@@ -76,8 +88,18 @@ class MainAgent:
             ],
             temperature=0.0,
             max_tokens=128,
+            response_format={"type": "json_object"}
         )
-        return response.choices[0].message.content.strip()
+        
+        raw_output = response.choices[0].message.content.strip()
+        try:
+            parsed = json.loads(raw_output)
+            return {
+                "search_query": parsed.get("search_query", question),
+                "query_type": parsed.get("query_type", "story")
+            }
+        except json.JSONDecodeError:
+            return {"search_query": question, "query_type": "story"}
 
     async def query(self, question: str, chat_history: List[Dict] = None) -> Dict:
         """
@@ -85,10 +107,12 @@ class MainAgent:
         Dùng cho multi-turn test cases (Context Carry-over, Correction).
         """
         # 1. Query rewriting
-        search_query = await self._rewrite_query(question, chat_history or [])
+        rewrite_result = await self._rewrite_query(question, chat_history or [])
+        search_query = rewrite_result["search_query"]
+        query_type = rewrite_result["query_type"]
 
-        # 2. Retrieval bằng query đã viết lại
-        retrieved_docs = search_vector_db(search_query, top_k=3)
+        # 2. Retrieval bằng query đã viết lại và filter theo type
+        retrieved_docs = search_vector_db(search_query, top_k=3, type=query_type)
         retrieved_ids = [doc["id"] for doc in retrieved_docs]
         contexts = [doc["content"] for doc in retrieved_docs]
         sources = list({doc["source"] for doc in retrieved_docs})
@@ -128,6 +152,7 @@ class MainAgent:
                 "completion_tokens": usage.completion_tokens,
                 "sources": sources,
                 "search_query": search_query,
+                "query_type": query_type,
             },
         }
 
@@ -137,17 +162,7 @@ if __name__ == "__main__":
         agent = MainAgent()
 
         # Single-turn
-        resp = await agent.query("Làm thế nào để đổi mật khẩu?")
-        print("Answer:", resp["answer"])
-        print("Retrieved IDs:", resp["retrieved_ids"])
-
-        # Multi-turn — Context Carry-over
-        history = [
-            {"role": "user", "content": "Tôi muốn đổi mật khẩu."},
-            {"role": "assistant", "content": resp["answer"]},
-        ]
-        resp2 = await agent.query("Mật khẩu mới cần đáp ứng điều kiện gì?", chat_history=history)
-        print("\nRewritten query:", resp2["metadata"]["search_query"])
-        print("Multi-turn answer:", resp2["answer"])
+        resp = await agent.query("Trong câu chuyện cây khế, bài học rút ra là gì ?")
+        print(json.dumps(resp, ensure_ascii=False, indent=2))
 
     asyncio.run(test())
