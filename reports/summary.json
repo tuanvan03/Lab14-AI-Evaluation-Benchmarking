@@ -2,11 +2,16 @@
   "metadata": {
     "version": "Agent_V2_Optimized",
     "total": 54,
-    "timestamp": "2026-04-21 16:09:11"
+    "timestamp": "2026-04-21 17:20:52",
+    "duration_sec": 73.81,
+    "mode": "parallel",
+    "total_cost_usd": 0.29093225000000017,
+    "total_tokens": 82779
   },
   "metrics": {
-    "avg_score": 2.962962962962963,
+    "avg_score": 3.1481481481481484,
     "hit_rate": 0.4074074074074074,
-    "agreement_rate": 0.8814814814814815
+    "avg_mrr": 0.3333333333333333,
+    "agreement_rate": 0.9148148148148146
   }
 }

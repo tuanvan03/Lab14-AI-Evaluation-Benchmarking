@@ -139,15 +139,15 @@ def best_worst_cases(results: list[dict], top_n: int = 5) -> None:
     for r in sorted_r[:top_n]:
         score = r.get("judge", {}).get("final_score", "?")
         latency = r.get("latency", 0)
-        q = r.get("test_case", "")[:75]
-        print(f"  [Score={score}] [{latency:.2f}s] {q}...")
+        q = r.get("test_case", "")
+        print(f"  [Score={score}] [{latency:.2f}s] {q}")
 
     print(f"\n--- {top_n} Case TỐT NHẤT ---")
     for r in sorted_r[-top_n:][::-1]:
         score = r.get("judge", {}).get("final_score", "?")
         latency = r.get("latency", 0)
-        q = r.get("test_case", "")[:75]
-        print(f"  [Score={score}] [{latency:.2f}s] {q}...")
+        q = r.get("test_case", "")
+        print(f"  [Score={score}] [{latency:.2f}s] {q}")
 
 
 def latency_analysis(results: list[dict]) -> None:
